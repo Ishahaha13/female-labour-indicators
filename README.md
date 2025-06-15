@@ -15,7 +15,7 @@ This repository contains an exploratory analysis of women's labour market indica
 ## 📄 Report
 
 You can view the complete interactive report here:  
-**[Click to View HTML Report]([https://yourusername.github.io/your-repo-name/](https://ishahaha13.github.io/female-labour-indicators/))**  
+[Click to View HTML Report](https://ishahaha13.github.io/female-labour-indicators/)
 
 ---
 
