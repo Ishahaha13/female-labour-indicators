@@ -1,5 +1,3 @@
-[# female-labour-indicators
-R analysis of female labour market indicators before and after COVID using PLFS data.](https://ishahaha13.github.io/female-labour-indicators/)
 # Women's Labour Market Indicators (India)
 
 This repository contains an exploratory analysis of women's labour market indicators in India using data from PLFS Annual Reports. The project is built using **R** and visualized through **ggplot2** and **ggalt**.
