@@ -1,0 +1,110 @@
+---
+title: 'Women’s Work: COVID Impact on Female Employment'
+author: "Isha Tanwar"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r load-data}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(ggalt)
+```
+```{r set-working-directory, include=FALSE}
+setwd("C:/Users/sujal/OneDrive/Documents")
+```
+```{r read-data}
+national<- read_excel("r_practice.xlsx", sheet = "national")
+urban <- read_excel("r_practice.xlsx", sheet = "urban")
+rural <- read_excel("r_practice.xlsx", sheet = "rural")
+```
+
+## National Employment Indicators by Gender
+
+This report analyzes the impact of COVID-19 on women’s employment in India using PLFS data (2017–18 to 2020–21).  
+We focus on trends in Labour Force Participation Rate (LFPR), Worker Population Ratio (WPR), and Unemployment Rate (UR) — especially for women in urban and rural areas.
+
+Our goal: **Tell a data story using R and ggplot2.**
+
+```{r faceted-graph}
+national_long <- national %>% 
+  pivot_longer(cols = c(LFPR,WPR,UR), names_to = "Indicator", values_to = "Value")
+
+national_long_line <- national_long %>% ggplot(aes(Year, Value, group = Gender)) + 
+  geom_line(aes(colour = Gender)) + 
+  geom_point(aes(colour = Gender)) + 
+  labs(title = "Women's Labour Market Indicators (All India)",
+       y = "%", caption = "Source: PLFS Annual Reports, MoSPI") + 
+  theme(panel.background = element_blank(), 
+        panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"), 
+        plot.caption = element_text(hjust = 0, face = "italic")) + 
+  facet_wrap(~ Indicator)
+national_long_line
+```
+
+## Urban vs Rural WPR Comparison (2018-19 vs 2020-21)
+
+```{r bar-chart}
+combined_wr <- bind_rows(
+  mutate(urban, Area = "Urban"),
+  mutate(rural, Area = "Rural"))
+df2020 <- combined_wr %>% filter(Year %in% c("2018-19","2020-21"), Gender == "Female")
+wpr_bar <- ggplot(df2020, aes(x = Area, y = WPR, fill = Year)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6) +
+  labs(title = "Female WPR: Urban vs Rural (2018–19 vs 2020–21)",x = "",y = "WPR (%)",
+       fill = "Year") + 
+  theme(panel.background = element_blank(), 
+        panel.grid.minor.y = element_line(colour = "grey", linetype = "dotted"))
+wpr_bar
+```
+
+## Drop in Urban Female WPR (Dumbbell Plot)
+
+```{r dumbbell}
+df_dumbbell <- urban %>%
+  filter(Gender == "Female", Year %in% c("2017-18", "2020-21")) %>%
+  select(Year, WPR)
+df_dumbbell <- tibble(
+  Area = "Urban",
+  `2017-18` = df_dumbbell$WPR[1],
+  `2020-21` = df_dumbbell$WPR[2])
+df_dumbbell_line <- ggplot(df_dumbbell, aes(y = Area, x = `2017-18`, xend = `2020-21`)) +
+  geom_dumbbell(color = "grey", size = 1.5,
+                colour_x = "blue", colour_xend = "red") +
+  labs(title = "Drop in Urban Female WPR: Before vs After COVID",x = "WPR (%)",y = "") +
+  theme_minimal()
+df_dumbbell_line
+```
+
+## Conclusion
+The graphical analysis of female labour market participation in India highlights key patterns and post-pandemic shifts:
+
+### Overall Labour Indicators by Gender (All India):
+
+Female Labour Force Participation Rate (LFPR) and WPR show a gradual rise from 2017–18 to 2020–21, while the Unemployment Rate (UR) has marginally declined.
+
+In contrast, male indicators have remained relatively stable, widening the gender gap in labour participation despite some improvements for women.
+
+This trend hints at slow but positive gains in female engagement with the labour market, albeit from a low base.
+
+### Urban vs Rural Comparison (2018–19 & 2020–21):
+
+Rural females had consistently higher WPR than urban females in both years.
+
+The increase in rural female WPR was sharper, suggesting a COVID-driven rural employment push, possibly in agriculture or informal sectors.
+
+Urban female WPR remained low, reflecting challenges in re-entering the urban formal labour market after the pandemic.
+
+### Drop in Urban Female WPR: Before vs After COVID:
+
+A focused look at urban women’s WPR before and after COVID-19 shows a modest improvement post-pandemic, but it still lags behind rural trends.
+
+This reflects that while some recovery has happened, urban structural issues like job losses in services, mobility constraints, and caregiving responsibilities continue to restrict women’s return to work.
+
+
+
